@@ -62,8 +62,19 @@ def extract_titles(text):
         Method for extracting titles from text using regex.
     '''
     # Use regex to find title-like patterns (capitalized words)
-    title_pattern = r'([A-Z][a-z]+(?:\s[A-Z][a-z]+)*)'
+    # title_pattern = r'([A-Z][a-z]+(?:\s[A-Z][a-z]+)*)'
+    title_pattern = r'([A-Z][\w\'\-:,\&\s]+(?:[A-Z][\w\'\-:,\&\s]*)+)'
     titles = re.findall(title_pattern, text)
+
+    lines = text.split('\n')
+    titles = []
+    for line in lines:
+        match = re.match(title_pattern, line.strip())
+        if match:
+            titles.append(match.group(0))
+
+    # Remove extra whitespace
+    titles = [title.strip() for title in titles]
     
     print("Detected Titles:")
     for title in titles:
@@ -73,12 +84,19 @@ def extract_titles(text):
 # extracted_text = extract_text('bookshelf.jpeg')
 # print(extracted_text)
 
-# sample_text = """The Great Gatsby
+# sample_text = """
+# The Great Gatsby
 # Harry Potter and the Philosopher's Stone
-# The Catcher in the Rye"""
+# The Catcher in the Rye
+# 1984
+# To Kill a Mockingbird
+# Brave New World
+# The Lord of the Rings: The Fellowship of the Ring
+# """
 # extract_titles(sample_text)
 
 # extracted_text = extract_text('bookshelf.jpeg')
+
 preprocessed_image = preprocess_image('dvdshelf.jpeg')
 denoised_image = denoise_image(preprocessed_image)
 extracted_text = extract_text(denoised_image)
