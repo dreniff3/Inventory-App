@@ -1,9 +1,13 @@
 import easyocr
 from PIL import Image, ImageEnhance, ImageFilter
+import cv2
 import re
 
 
 def preprocess_image(img_path):
+    '''
+        Method for preprocessing image to improve OCR results.
+    '''
     img = Image.open(img_path)
 
     # Convert image to grayscale
@@ -22,6 +26,16 @@ def preprocess_image(img_path):
     # Save preprocessed image
     img.save('preprocessed_image.jpeg')
     return 'preprocessed_image.jpeg'
+
+
+def denoise_image(img_path):
+    '''
+        Method for denoising image to improve OCR performance.
+    '''
+    img = cv2.imread(img_path)
+    denoised_image = cv2.fastNlMeansDenoisingColored(img, None, 10, 10, 7, 21)
+    cv2.imwrite('denoised_image.jpeg', denoised_image)
+    return 'denoised_image.jpeg'
 
 
 def extract_text(img_path):
@@ -66,5 +80,6 @@ def extract_titles(text):
 
 # extracted_text = extract_text('bookshelf.jpeg')
 preprocessed_image = preprocess_image('dvdshelf.jpeg')
-extracted_text = extract_text(preprocessed_image)
+denoised_image = denoise_image(preprocessed_image)
+extracted_text = extract_text(denoised_image)
 extract_titles(extracted_text)
