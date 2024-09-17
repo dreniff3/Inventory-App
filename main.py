@@ -118,7 +118,17 @@ def apply_morphological_transform(img_path):
 
 # 5. Enhance contrast
 def enhance_contrast(img_path):
-    pass
+    '''
+        Method for improving contrast between text and background.
+    '''
+    # Load image
+    img = Image.open(img_path)
+    # Increase contrast
+    enhancer = ImageEnhance.Contrast(img)
+    enhanced_img = enhancer.enhance(2)  # Increase contrast by a factor of 2
+    # Save and return enhanced image
+    enhanced_img.save('enhanced_contrast_image.jpeg')
+    return 'enhanced_contrast_image.jpeg'
 
 
 # Full image processing pipeline
@@ -131,25 +141,26 @@ def process_image(img_path):
     return contrast_image
 
 
-def extract_text(img_path):
-    '''
-        Method for extracting text from an image.
-    '''
-    # Initialize EasyOCR reader for English language
-    reader = easyocr.Reader(['en'])
+# def extract_text(img_path):
+#     '''
+#         Method for extracting text from an image.
+#     '''
+#     # Initialize EasyOCR reader for English language
+#     reader = easyocr.Reader(['en'])
 
-    # Use EasyOCR to read text from image
-    result = reader.readtext(img_path, detail=0)
+#     # Use EasyOCR to read text from image
+#     result = reader.readtext(img_path, detail=0)
 
-    # Extract and print text
-    txt = ""
-    # for (bbox, text, prob) in result:
-    for text in result:
-        txt += f"{text}\n"
+#     # Extract and print text
+#     txt = ""
+#     # for (bbox, text, prob) in result:
+#     for text in result:
+#         txt += f"{text}\n"
 
-    return txt
+#     return txt
 
 
+# Extract titles
 def extract_titles(text):
     '''
         Method for extracting titles from text using regex.
@@ -172,6 +183,8 @@ def extract_titles(text):
     print("Detected Titles:")
     for title in titles:
         print(f"- {title}")
+
+    return titles
 
 
 # extracted_text = extract_text('bookshelf.jpeg')
