@@ -33,8 +33,11 @@ def denoise_image(img_path):
     '''
         Method for denoising image to improve OCR performance.
     '''
+    # Load image
     img = cv2.imread(img_path)
+    # Apply Non-Local Means Denoising
     denoised_image = cv2.fastNlMeansDenoisingColored(img, None, 10, 10, 7, 21)
+    # Save and return denoised image
     cv2.imwrite('denoised_image.jpeg', denoised_image)
     return 'denoised_image.jpeg'
 
@@ -45,6 +48,7 @@ def deskew_image(img_path):
         Method for deskewing image (correcting alignment to be horizontal) for
         better recognition.
     '''
+    # Load image
     img = cv2.imread(img_path)
     # Convert image to grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -60,6 +64,7 @@ def deskew_image(img_path):
                 angle = np.degrees(np.arctan2(y2 - y1, x2 - x1))
                 angles.append(angle)
         median_angle = np.median(angles)
+        # Rotate image to deskew it
         (h, w) = img.shape[:2]
         center = (w // 2, h // 2)
         M = cv2.getRotationMatrix2D(center, median_angle, 1.0)
@@ -67,10 +72,12 @@ def deskew_image(img_path):
             img, M, (w, h), flags=cv2.INTER_CUBIC,
             borderMode=cv2.BORDER_REPLICATE
             )
+        # Save and return deskewed image
         cv2.imwrite('deskewed_image.jpeg', deskewed_image)
         return 'deskewed_image.jpeg'
-    else:
-        return img_path  # Deskewing not needed
+    
+    # Deskewing not needed
+    return img_path
 
 
 # 3. Thresholding (Binarization)
@@ -79,17 +86,34 @@ def binarize_image(img_path):
         Method for converting image to binary format (black and white) to
         further reduce noise/emphasize text.
     '''
+    # Load image
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+    # Apply adaptive thresholding to handle varying brightness levels
     binarized_image = cv2.adaptiveThreshold(
         img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2
         )
+    # Save and return binarized image
     cv2.imwrite('binarized_image.jpeg', binarized_image)
     return 'binarized_image.jpeg'
 
 
 # 4. Morphological Transformation (Dilation to connect text)
 def apply_morphological_transform(img_path):
-    pass
+    '''
+        Method that applies morphological transformations (dilation, erosion) to
+        connect parts of text and improve consistency of characters.
+    '''
+    # Load image
+    img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+    # Apply thresholding
+    _, binary_img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY_INV)
+    # Define structuring element
+    kernel = np.ones((2, 2), np.uint8)
+    # Apply dilation to make characters thicker/more connected
+    dilated_img = cv2.dilate(binary_img, kernel, iterations=1)
+    # Save and return transformed image
+    cv2.imwrite('morph_dilated_image.jpeg', dilated_img)
+    return 'morph_dilated_image.jpeg'
 
 
 # 5. Enhance contrast
